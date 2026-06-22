@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Symptoms Checker</title>
+<style>
+body{font-family:Arial,sans-serif;background:#eef5ff;margin:0;padding:20px}
+.container{max-width:800px;margin:auto;background:#fff;padding:25px;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,.1)}
+h1{text-align:center;color:#1565c0}
+.question{font-size:20px;margin:20px 0}
+button{padding:12px 18px;margin:8px;border:none;border-radius:8px;cursor:pointer}
+.yes{background:#2e7d32;color:white}
+.no{background:#c62828;color:white}
+.card{border:1px solid #ddd;padding:15px;border-radius:10px;margin:10px 0}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>🩺 Symptoms Checker</h1>
+<div id="quiz"></div>
+<div id="result"></div>
+</div>
+
+<script>
+const questions=[
+"Do you have a fever?",
+"Do you have a cough?",
+"Do you have a sore throat?",
+"Do you have a runny nose?",
+"Do you have a headache?",
+"Do you have nausea or vomiting?"
+];
+
+const symptomKeys=["fever","cough","sore throat","runny nose","headache","nausea"];
+
+const diseases=[
+{
+name:"Common Cold",
+symptoms:["cough","sore throat","runny nose"],
+description:"A viral infection affecting the upper respiratory tract.",
+treatment:"Rest, fluids and symptom relief."
+},
+{
+name:"Influenza (Flu)",
+symptoms:["fever","cough","sore throat","headache"],
+description:"A contagious viral respiratory illness.",
+treatment:"Rest, hydration and medical advice when needed."
+},
+{
+name:"COVID-19",
+symptoms:["fever","cough","headache"],
+description:"A respiratory infection caused by SARS‑CoV‑2.",
+treatment:"Supportive care and professional medical guidance."
+},
+{
+name:"Food Poisoning",
+symptoms:["nausea","fever"],
+description:"Illness caused by contaminated food.",
+treatment:"Hydration and medical care if severe."
+},
+{
+name:"Migraine",
+symptoms:["headache","nausea"],
+description:"A neurological disorder causing severe headaches.",
+treatment:"Pain management and trigger avoidance."
+}
+];
+
+let index=0;
+let selected=[];
+
+function showQuestion(){
+const q=document.getElementById("quiz");
+
+if(index>=questions.length){
+showResults();
+return;
+}
+
+q.innerHTML=`
+<div class="question">${questions[index]}</div>
+<button class="yes" onclick="answer(true)">Yes</button>
+<button class="no" onclick="answer(false)">No</button>
+`;
+}
+
+function answer(ans){
+if(ans) selected.push(symptomKeys[index]);
+index++;
+showQuestion();
+}
+
+function showResults(){
+document.getElementById("quiz").style.display="none";
+
+let results=diseases.map(d=>({
+...d,
+score:d.symptoms.filter(s=>selected.includes(s)).length
+})).sort((a,b)=>b.score-a.score).slice(0,3);
+
+let html="<h2>Possible Conditions</h2>";
+
+results.forEach(d=>{
+html+=`
+<div class="card">
+<h3>${d.name}</h3>
+<p><b>Match Score:</b> ${d.score}</p>
+<p><b>Description:</b> ${d.description}</p>
+<p><b>Treatment:</b> ${d.treatment}</p>
+</div>
+`;
+});
+
+html+=`<p><b>Disclaimer:</b> This is not a medical diagnosis. Consult a healthcare professional.</p>`;
+
+document.getElementById("result").innerHTML=html;
+}
+
+showQuestion();
+</script>
+</body>
+</html>
